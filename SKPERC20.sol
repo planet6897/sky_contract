@@ -91,10 +91,21 @@ contract SKPERC20 is SKPContext, ERC20 {
     /**
      * @dev 잠금 물량 확인
      */
-    function getTimeLimitedBalance(address account) public view onlyOwnerShip returns (uint256) {
-        uint256 limitedBalance = _timeLimitedBalances[account];
+    function getTimeLimitedBalance(address account) public view returns (uint256) {
+        uint initialLimitedBalance = _timeLimitedBalances[account];
 
-        return limitedBalance;
+        if (initialLimitedBalance > 0) {
+            uint256 presentTime = block.timestamp;
+            uint256 sinceOpeningTime = presentTime.sub(_openingTime);
+            uint256 _month = sinceOpeningTime.div(31 days);
+            uint256 unLockValue = initialLimitedBalance.mul(_month).div(10);
+            uint256 remainLimitedValue = initialLimitedBalance - unLockValue;
+            uint256 availableValue = balanceOf(account).sub(remainLimitedValue);
+
+            return availableValue;
+        }
+
+        return 0;
     }
 
     function transfer(
@@ -111,13 +122,9 @@ contract SKPERC20 is SKPContext, ERC20 {
             uint256 remainLimitedValue = initialLimitedBalance - unLockValue;
             uint256 availableValue = balanceOf(_msgSender()).sub(remainLimitedValue);
 
-            require(availableValue > 0, "ERC20: cannot transfer");
+            require(amount <= availableValue, "ERC20: cannot transfer");
 
-            if (amount < availableValue) {
-                super.transfer(to, amount);
-            } else {
-                super.transfer(to, availableValue);
-            }
+            super.transfer(to, amount);
             return true;
         }
 
@@ -149,13 +156,10 @@ contract SKPERC20 is SKPContext, ERC20 {
             uint256 remainLimitedValue = initialLimitedBalance - unLockValue;
             uint256 availableValue = balanceOf(from).sub(remainLimitedValue);
 
-            require(availableValue > 0, "ERC20: cannot transfer");
+            require(amount <= availableValue, "ERC20: cannot transfer");
 
-            if (amount < availableValue) {
-                super.transferFrom(from, to, amount);
-            } else {
-                super.transferFrom(from, to, availableValue);
-            }
+            super.transferFrom(from, to, amount);
+
             return true;
         }
 
