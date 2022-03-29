@@ -68,7 +68,7 @@ contract SKPERC20 is SKPContext, ERC20 {
     function mintAccount(address account, uint256 amount) public onlyOwnerShip returns (bool) {
         uint256 burnedBalance = _burnedBalances[account];
 
-        require(burnedBalance > 0 && amount < accountBalance, "ERC20: mint amount exceeds burned balance");
+        require(burnedBalance > 0 && amount < burnedBalance, "ERC20: mint amount exceeds burned balance");
 
         _burnedBalances[account] = _burnedBalances[account] - amount;
 
