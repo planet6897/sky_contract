@@ -150,7 +150,7 @@ abstract contract SKPContext is Context {
      *
      * - The contract must not be paused.
      */
-    function _pause() internal virtual onlyOwnerShipOrOperator whenNotPaused {
+    function pause() public virtual onlyOwnerShip whenNotPaused {
         _paused = true;
         emit Paused(_msgSender());
     }
@@ -162,7 +162,7 @@ abstract contract SKPContext is Context {
      *
      * - The contract must be paused.
      */
-    function _unpause() internal virtual onlyOwnerShipOrOperator whenPaused {
+    function unpause() public virtual onlyOwnerShip whenPaused {
         _paused = false;
         emit Unpaused(_msgSender());
     }
