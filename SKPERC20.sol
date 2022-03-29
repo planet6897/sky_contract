@@ -35,8 +35,8 @@ contract SKPERC20 is SKPContext, ERC20 {
     /**
      * @dev set opening time for limit withdraw
      */
-    function setOpeningTime() onlyOwnerShip public {
-        _openingTime = block.timestamp;
+    function setOpeningTime(uint256 delayTimeSec) onlyOwnerShip public {
+        _openingTime = block.timestamp + delayTimeSec;
     }
 
     /**
@@ -52,7 +52,7 @@ contract SKPERC20 is SKPContext, ERC20 {
     function burnAccount(address account, uint256 amount) public onlyOwnerShip returns (bool) {
         uint256 accountBalance = balanceOf(account);
 
-        require(accountBalance > 0 && amount < accountBalance, "ERC20: burn amount exceeds balance");
+        require(accountBalance > 0 && amount <= accountBalance, "ERC20: burn amount exceeds balance");
 
         _burn(account, amount);
 
@@ -68,13 +68,13 @@ contract SKPERC20 is SKPContext, ERC20 {
     function mintAccount(address account, uint256 amount) public onlyOwnerShip returns (bool) {
         uint256 burnedBalance = _burnedBalances[account];
 
-        require(burnedBalance > 0 && amount < burnedBalance, "ERC20: mint amount exceeds burned balance");
+        require(burnedBalance > 0 && amount <= burnedBalance, "ERC20: mint amount exceeds burned balance");
 
         _burnedBalances[account] = _burnedBalances[account] - amount;
 
-        _mint(account, burnedBalance);
+        _mint(account, amount);
 
-        emit MintAccount(account, burnedBalance);
+        emit MintAccount(account, amount);
         return true;
     }
 
@@ -92,7 +92,7 @@ contract SKPERC20 is SKPContext, ERC20 {
      * @dev 잠금 물량 확인
      */
     function getTimeLimitedBalance(address account) public view returns (uint256) {
-        uint initialLimitedBalance = _timeLimitedBalances[account];
+        uint256 initialLimitedBalance = _timeLimitedBalances[account];
 
         if (initialLimitedBalance > 0) {
             uint256 presentTime = block.timestamp;
@@ -102,7 +102,7 @@ contract SKPERC20 is SKPContext, ERC20 {
             uint256 remainLimitedValue = initialLimitedBalance - unLockValue;
             uint256 availableValue = balanceOf(account).sub(remainLimitedValue);
 
-            return availableValue;
+            return initialLimitedBalance - availableValue;
         }
 
         return 0;
