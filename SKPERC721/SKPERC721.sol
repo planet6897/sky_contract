@@ -1,38 +1,27 @@
 // SPDX-License-Identifier: GPL-3.0
 
-// Amended by Jaeook Ryu
-/**
-    !Disclaimer!
-    These contracts have been used to create tutorials,
-    and was created for the purpose to teach people
-    how to create smart contracts on the blockchain.
-    please review this code on your own before using any of
-    the following code for production.
-    HashLips will not be liable in any way if for the use 
-    of the code. That being said, the code has been tested 
-    to the best of the developers' knowledge to work as intended.
-*/
-
 pragma solidity >=0.7.0 <0.9.0;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Ownable.sol";
 
-contract SKYNFT is ERC721Enumerable, Ownable {
+contract SKPNFT is ERC721Enumerable, Ownable {
     using Strings for uint256;
 
     string public baseURI;
     string public baseExtension = ".json";
     uint32 public maxSupply = 10000;
-    uint256 public maxMintAmount = 20;
+    uint256 public maxMintAmount = 1;
     bool public paused = false;
 
     constructor(
         string memory _name,
         string memory _symbol,
-        string memory _initBaseURI
+        string memory _initBaseURI,
+        address owner
     ) ERC721(_name, _symbol) {
         setBaseURI(_initBaseURI);
+        _transferOwnership(owner);
     }
 
     function deposit() payable public {
@@ -44,7 +33,7 @@ contract SKYNFT is ERC721Enumerable, Ownable {
     }
 
     // public
-    function mint(address _to, uint256 _mintAmount) public payable {
+    function mint(address _to, uint256 _mintAmount) public payable onlyOwner {
         uint256 supply = totalSupply();
         require(!paused);
         require(_mintAmount > 0);
