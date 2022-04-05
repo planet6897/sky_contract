@@ -31,13 +31,13 @@ contract SKPNFT is ERC721Enumerable, Ownable {
     }
 
     // public
-    function mint(address _to, string memory tokenURI) public payable onlyOwner {
+    function mint(address _to, string memory _tokenURI) public payable onlyOwner {
         uint256 newTokenId = totalSupply() + 1;
         require(!paused);
 
         _safeMint(_to, newTokenId);
 
-        _tokenURIs[newTokenId] = tokenURI;
+        _tokenURIs[newTokenId] = _tokenURI;
     }
 
     function walletOfOwner(address _owner)
