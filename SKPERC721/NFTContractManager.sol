@@ -29,11 +29,10 @@ contract NFTContractManger is Ownable {
      */
     function createNFTContract(
         string memory _name,
-        string memory _symbol,
-        string memory _initBaseURI
+        string memory _symbol
     ) public payable onlyOwner returns (address) {
 
-        SKPNFT f = new SKPNFT(_name, _symbol, _initBaseURI, owner());
+        SKPNFT f = new SKPNFT(_name, _symbol, owner());
         _contractCount.increment();
 
         address nftAddress = address(f);
