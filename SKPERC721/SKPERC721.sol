@@ -11,7 +11,7 @@ contract SKPNFT is ERC721Enumerable, Ownable {
     string public baseURI;
     bool public paused = false;
 
-    mapping(uint256 => string) private _tokenURIs;
+    mapping(uint256 => bytes) private _fileHash;
 
     constructor(
         string memory _name,
@@ -31,13 +31,13 @@ contract SKPNFT is ERC721Enumerable, Ownable {
     }
 
     // public
-    function mint(address _to, string memory _tokenURI) public payable onlyOwner {
+    function mint(address _to, bytes memory fileHash) public payable onlyOwner {
         uint256 newTokenId = totalSupply() + 1;
         require(!paused);
 
         _safeMint(_to, newTokenId);
 
-        _tokenURIs[newTokenId] = _tokenURI;
+        _fileHash[newTokenId] = fileHash;
     }
 
     function walletOfOwner(address _owner)
@@ -67,7 +67,7 @@ contract SKPNFT is ERC721Enumerable, Ownable {
 
         string memory currentBaseURI = _baseURI();
         return bytes(currentBaseURI).length > 0
-            ? string(abi.encodePacked(currentBaseURI, _tokenURIs[tokenId]))
+            ? string(abi.encodePacked(currentBaseURI, _fileHash[tokenId]))
             : "";
     }
 
