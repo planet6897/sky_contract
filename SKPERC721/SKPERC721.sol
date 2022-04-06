@@ -8,9 +8,9 @@ import "./Ownable.sol";
 contract SKPNFT is ERC721Enumerable, Ownable {
     using Strings for uint256;
 
-    string public baseURI;
     bool public paused = false;
 
+    string private baseURI;
     mapping(uint256 => bytes) private _fileHash;
 
     constructor(
@@ -24,6 +24,10 @@ contract SKPNFT is ERC721Enumerable, Ownable {
 
     function deposit() payable public {
         require(msg.value == 0, "Cannot deposit ether.");
+    }
+
+    function _setBaseURI(string memory _newBaseURI) internal onlyOwner {
+        baseURI = _newBaseURI;
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
@@ -77,10 +81,6 @@ contract SKPNFT is ERC721Enumerable, Ownable {
             "ERC721Metadata: URI query for nonexistent token"
         );
         _burn(tokenId);
-    }
-
-    function _setBaseURI(string memory _newBaseURI) internal onlyOwner {
-        baseURI = _newBaseURI;
     }
 
     function pause(bool _state) public onlyOwner {
