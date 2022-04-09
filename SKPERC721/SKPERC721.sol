@@ -3,15 +3,15 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "./Ownable.sol";
+import "./Authorizable.sol";
 
-contract SKPNFT is ERC721Enumerable, Ownable {
+contract SKPNFT is ERC721Enumerable, Authorizable {
     using Strings for uint256;
 
     bool public paused = false;
 
     string private baseURI;
-    mapping(uint256 => bytes) private _fileHash;
+    mapping(uint256 => string) private _fileHash;
 
     constructor(
         string memory _name,
@@ -35,7 +35,7 @@ contract SKPNFT is ERC721Enumerable, Ownable {
     }
 
     // public
-    function mint(address _to, bytes memory fileHash) public payable onlyOwner {
+    function mint(address _to, string memory fileHash) public payable onlyAuthorized {
         uint256 newTokenId = totalSupply() + 1;
         require(!paused);
 
@@ -75,7 +75,7 @@ contract SKPNFT is ERC721Enumerable, Ownable {
             : "";
     }
 
-    function burn(uint256 tokenId) public onlyOwner {
+    function burn(uint256 tokenId) public onlyAuthorized {
         require(
             _exists(tokenId),
             "ERC721Metadata: URI query for nonexistent token"
