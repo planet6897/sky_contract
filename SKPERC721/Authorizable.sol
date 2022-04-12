@@ -12,7 +12,7 @@ contract Authorizable is Ownable {
     event RemoveAuthorized(address indexed _toRemove);
 
     modifier onlyAuthorized() {
-        require(authorized[msg.sender] || owner() == msg.sender);
+        require(authorized[msg.sender] || owner() == msg.sender, "Authorizable: caller is not authorized");
         _;
     }
 
