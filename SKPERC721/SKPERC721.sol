@@ -18,7 +18,7 @@ contract SKPNFT is ERC721Enumerable, Authorizable {
         string memory _symbol,
         address owner
     ) ERC721(_name, _symbol) {
-        _setBaseURI("ipfs://");
+        _setBaseURI("https://nft.skyplay.io/files/");
         _transferOwnership(owner);
     }
 
