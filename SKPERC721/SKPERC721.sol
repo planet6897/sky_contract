@@ -18,16 +18,22 @@ contract SKPNFT is ERC721Enumerable, Authorizable {
         string memory _symbol,
         address owner
     ) ERC721(_name, _symbol) {
-        _setBaseURI("https://nft.skyplay.io/files/");
+        setBaseURI("https://nft.skyplay.io/files/");
+        // setBaseURI("https://nftdev.skyplay.io/files/");
         _transferOwnership(owner);
     }
 
-    function deposit() payable public {
-        require(msg.value == 0, "Cannot deposit ether.");
+    function setBaseURI(string memory newBaseURI) public onlyAuthorized {
+        baseURI = newBaseURI;
     }
 
-    function _setBaseURI(string memory _newBaseURI) internal onlyOwner {
-        baseURI = _newBaseURI;
+    function setFileHash(uint256 tokenId, string memory fileHash) public onlyAuthorized {
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: setFileHash for nonexistent token"
+        );
+
+        _fileHash[tokenId] = fileHash;
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
@@ -35,7 +41,7 @@ contract SKPNFT is ERC721Enumerable, Authorizable {
     }
 
     // public
-    function mint(address _to, string memory fileHash) public payable onlyAuthorized {
+    function mint(address _to, string memory fileHash) public onlyAuthorized {
         uint256 newTokenId = totalSupply() + 1;
         require(!paused);
 
